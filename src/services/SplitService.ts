@@ -1,11 +1,11 @@
 import { SplitFactory } from "@splitsoftware/splitio";
-// Instantiate the SDK
+
 const factory: SplitIO.IBrowserSDK = SplitFactory({
   core: {
-    authorizationKey: "kjrqaceenlm6jkarhi3ku687l1ttoh384hd4",
-    key: "key",
+    authorizationKey: import.meta.env.VITE_SPLIT_AUTHORIZATION_KEY || "",
+    key: import.meta.env.VITE_SPLIT_KEY || "key",
   },
-});
+});;
 
 const client: SplitIO.IBrowserClient = factory.client();
 const manager: SplitIO.IManager = factory.manager();
