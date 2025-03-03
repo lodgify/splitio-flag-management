@@ -5,23 +5,29 @@ const factory: SplitIO.IBrowserSDK = SplitFactory({
     authorizationKey: import.meta.env.VITE_SPLIT_AUTHORIZATION_KEY || "",
     key: import.meta.env.VITE_SPLIT_KEY || "key",
   },
-});;
+});
 
 const client: SplitIO.IBrowserClient = factory.client();
 const manager: SplitIO.IManager = factory.manager();
 
 export const SplitService = {
-    client,
-    manager,
-    ready: () => new Promise((resolve) => client.on(client.Event.SDK_READY, resolve)),
-    getSplits: () => manager.names().map(name => {
+  client,
+  manager,
+  ready: () =>
+    new Promise((resolve) => client.on(client.Event.SDK_READY, resolve)),
+  getSplits: () =>
+    manager.names().map((name) => {
       const split = manager.split(name);
-      debugger;
+      const isObsolete =
+        split.killed ||
+        new Date().getTime() - split.changeNumber > 180 * 24 * 60 * 60 * 1000;
       return {
         name,
-        status: split.status || 'unknown',
-        tags: split.tags || ['Untagged'],
-        creationDate: new Date(split.changeNumber).toLocaleDateString()
+        creationDate: new Date(split.changeNumber).toLocaleDateString(),
+        trafficType: split.trafficType || "unknown",
+        killed: split.killed || false,
+        treatments: split.treatments || [],
+        isObsolete,
       };
     }),
-  };
+};
